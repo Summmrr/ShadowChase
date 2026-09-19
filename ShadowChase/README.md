@@ -11,4 +11,5 @@ Every step was created myself, including but not limited to:
  - All Interactions
 
 To play game, simply download ShadowChase, open in any IDE supporting java, navigate to ShadowChase/main/ShadowChase.java and run the code.
+
 Note: NO AI WAS USED IN THE CODE OR GRAPHICS
