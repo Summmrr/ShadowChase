@@ -1,0 +1,7 @@
+package environment;
+import java.awt.image.BufferedImage;
+public class TileStorage {
+  
+ public BufferedImage sprite;
+  
+}

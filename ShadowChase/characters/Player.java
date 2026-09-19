@@ -1,0 +1,247 @@
+
+package characters;
+import java.io.*;
+import java.awt.*;
+import main.GameWindow;
+import main.KeyHandler;
+import javax.imageio.*;
+import java.awt.image.BufferedImage;
+import environment.Tiles;
+
+//class containing all code related to the player and shadow characters
+public class Player extends Entities {
+     GameWindow gW;
+     KeyHandler inputs;
+     public boolean turn1;
+     public boolean turn2;
+     public boolean turn3;
+     public boolean turn4;
+     
+     
+     public Player(GameWindow gW, KeyHandler inputs){
+          
+          this.gW = gW;
+          this.inputs = inputs;
+          defaultValues();
+          getPlayerSprite();
+          getShadowSprite();
+          direction = 'S';
+          shadowDirection = 'S';
+     }
+     
+     //method collecting and storing every player character sprite
+     public void getPlayerSprite(){
+          try{
+               up1 = ImageIO.read(getClass().getResourceAsStream("/sprites/Player_up1.png"));
+               up2 = ImageIO.read(getClass().getResourceAsStream("/sprites/Player_up2.png"));
+               down1 = ImageIO.read(getClass().getResourceAsStream("/sprites/Player_down1.png"));
+               down2 = ImageIO.read(getClass().getResourceAsStream("/sprites/Player_down2.png"));
+               left1 = ImageIO.read(getClass().getResourceAsStream("/sprites/Player_left1.png"));
+               left2 = ImageIO.read(getClass().getResourceAsStream("/sprites/Player_left2.png"));
+               right1 = ImageIO.read(getClass().getResourceAsStream("/sprites/Player_right1.png"));
+               right2 = ImageIO.read(getClass().getResourceAsStream("/sprites/Player_right2.png"));
+               
+          }
+          catch(IOException e){
+               e.printStackTrace();
+          }
+     }
+          //method collecting and storing every shadow character sprite
+          public void getShadowSprite(){
+          try{
+               shadowUp1 = ImageIO.read(getClass().getResourceAsStream("/sprites/Shadow_up1.png"));
+               shadowUp2 = ImageIO.read(getClass().getResourceAsStream("/sprites/Shadow_up2.png"));
+               shadowDown1 = ImageIO.read(getClass().getResourceAsStream("/sprites/Shadow_down1.png"));
+               shadowDown2 = ImageIO.read(getClass().getResourceAsStream("/sprites/Shadow_down2.png"));
+               shadowLeft1 = ImageIO.read(getClass().getResourceAsStream("/sprites/Shadow_left1.png"));
+               shadowLeft2 = ImageIO.read(getClass().getResourceAsStream("/sprites/Shadow_left2.png"));
+               shadowRight1 = ImageIO.read(getClass().getResourceAsStream("/sprites/Shadow_right1.png"));
+               shadowRight2 = ImageIO.read(getClass().getResourceAsStream("/sprites/Shadow_right2.png"));
+               
+          }
+          catch(IOException e){
+               e.printStackTrace();
+          }
+     }
+          
+          //default values to spawb the characters at
+     public void defaultValues() { 
+          
+       shadowX = 64;
+       shadowY = 64;
+         x = 192;
+         y = 64;
+       speed = 4;
+     }
+     //method containing all logic update related to the player and shadow
+     public void update(){       
+     //if statement containing all movement for the shadow
+     if(inputs.startGame && Tiles.map01Bool)                
+     {
+          if (shadowX<896&&shadowY == 64){
+           shadowX+=speed;
+           shadowDirection = 'D';
+          }
+          if (shadowX==896&&shadowY<192){
+           shadowY+=speed;
+           shadowDirection = 'S';
+          }
+          if (shadowX>64&&shadowY==192){
+           shadowX-=speed;
+           shadowDirection = 'A';
+           turn1 = true;
+          }
+          if (shadowX==64&&shadowY<320){
+           shadowY+=speed;
+           shadowDirection = 'S';
+          }
+          if (shadowX<896&&shadowY==320){
+           shadowX+=speed;
+           shadowDirection = 'D';
+           turn2 = true;
+          }
+          if (shadowX==896&&shadowY<448&&turn1==true){
+           shadowY+=speed;
+           shadowDirection = 'S';
+          }
+          if (shadowX>64&&shadowY==448){
+           shadowX-=speed;
+           shadowDirection = 'A';
+           turn3 = true;
+          }
+          if (shadowX==64&&shadowY<576&&turn2==true){
+           shadowY+=speed;
+           shadowDirection = 'S';
+          }
+          if (shadowX<896&&shadowY==576){
+           shadowX+=speed;
+           shadowDirection = 'D';
+          }
+          if (shadowX==896&&shadowY<640&&turn3==true){
+           shadowY+=speed;
+           shadowDirection = 'S';
+          }
+          
+     }
+     //all movement for the player
+          if (inputs.up == true){                                     
+               y -= speed;
+               gW.collisionAreaY -=speed;
+               direction = 'W';
+          }
+          else if (inputs.down == true){
+               y += speed;
+               gW.collisionAreaY +=speed;
+               direction = 'S';
+          }
+          else if (inputs.left == true){
+               x -= speed;
+               gW.collisionAreaX -=speed;
+               direction = 'A';
+          }
+          else if (inputs.right == true){
+               x += speed;
+               gW.collisionAreaX +=speed;
+               direction = 'D';
+          }
+          
+          //sprite counter alternates between 1 and 2 every 15 frames allowing for animations
+          spriteCounter ++;                                         
+          if(spriteCounter > 15)
+          {
+               if (spriteNumber == 1) {
+                    spriteNumber = 2;    
+               }
+          
+               else if(spriteNumber == 2) {
+                    spriteNumber = 1;
+               }
+          spriteCounter = 0;
+          }
+ 
+     }
+     //method containing all graphical updates related to the player and shadow
+     public void draw(Graphics2D g2) {
+          BufferedImage player = null;
+          BufferedImage shadow = null;
+          
+          //switch case statement changes the player sprite image depending on its direction and the sprite counter
+          switch (direction){
+               case 'W':
+                    if(spriteNumber == 1) { 
+                    player = up1;
+               }
+                    if(spriteNumber == 2) { 
+                         player = up2;
+                    }
+                    break;
+               case 'A':
+                    if(spriteNumber == 1) { 
+                    player = left1;
+               }
+                    if(spriteNumber == 2) { 
+                         player = left2;
+                    }
+                    break;
+               case 'D':
+                    if(spriteNumber == 1) { 
+                    player = right1;
+               }
+                    if(spriteNumber == 2) { 
+                         player = right2;
+                    }
+                    break;
+               case 'S':
+                    if(spriteNumber == 1) { 
+                    player = down1;
+               }
+                    if(spriteNumber == 2) { 
+                         player = down2;
+                    }
+                    break;
+                    
+          }
+          //switch case statement changes the shadow sprite image depending on its direction and the sprite counter
+          switch (shadowDirection){
+               case 'W':
+                    if(spriteNumber == 1) { 
+                    shadow = shadowUp1;
+               }
+                    if(spriteNumber == 2) { 
+                         shadow = shadowUp2;
+                    }
+                    break;
+               case 'A':
+                    if(spriteNumber == 1) { 
+                    shadow = shadowLeft1;
+               }
+                    if(spriteNumber == 2) { 
+                         shadow = shadowLeft2;
+                    }
+                    break;
+               case 'D':
+                    if(spriteNumber == 1) { 
+                    shadow = shadowRight1;
+               }
+                    if(spriteNumber == 2) { 
+                         shadow = shadowRight2;
+                    }
+                    break;
+               case 'S':
+                    if(spriteNumber == 1) { 
+                    shadow = shadowDown1;
+               }
+                    if(spriteNumber == 2) { 
+                         shadow = shadowDown2;
+                    }
+                    break;
+                    
+          }
+          
+          //printing both images to the screen
+          g2.drawImage(player,x,y,gW.tileSize,gW.tileSize,null);
+          if(Tiles.map01Bool)
+          g2.drawImage(shadow,shadowX,shadowY,gW.tileSize,gW.tileSize,null);
+
+     }
+     }

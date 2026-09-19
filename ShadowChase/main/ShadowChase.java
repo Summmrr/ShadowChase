@@ -1,0 +1,75 @@
+//Aashir Kamran
+//Jan 11 2024 - Updated June 6 2024
+//Culminating ~ Build a game
+package main;
+
+import javax.swing.JFrame;
+import java.io.*;
+import main.GameWindow;
+import main.KeyHandler;
+
+/*CONTROLS:
+ * WASD  = MOVEMENT
+ * P     = PAUSE GAME
+ * SPACE = UNPAUSE GAME
+ * ENTER = WHILE ON GAMEOVER SCREEN, REPLAY
+ * */
+
+public class ShadowChase {
+  GameWindow gW;
+  KeyHandler inputs;
+  
+  public ShadowChase(GameWindow gW,KeyHandler inputs){
+   this.gW=gW;
+   this.inputs = inputs;
+   
+  }
+     
+     public static void main(String[] args)throws IOException { 
+          
+          JFrame window = new JFrame();
+          GameWindow gameWindow = new GameWindow();
+          KeyHandler inputs = new KeyHandler(gameWindow);
+         
+          window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  //end program when window is closed
+          window.setResizable(false);                             //do not allow window to be resizable
+          window.setTitle("Shadow Chase");                        //set window title to game title
+          window.add(gameWindow);                                 //call window
+          window.pack();                                          
+          window.setLocationRelativeTo(null);                     //spawn window in middle of screen
+          window.setVisible(true);                                //set window to visible
+          
+          
+          gameWindow.startGameThread();                           //start the game thread
+          
+     }
+  public static void fileOutput(int score1, int score2){
+          try{
+          PrintWriter output = new PrintWriter (new FileWriter("main/Output.txt"));
+          output.println("SCOREBOARD");
+          output.println("Computer: " + score1);
+          output.println("Player:   " + score2);
+          if(score1>score2)
+          {
+           output.println("Computer Wins!");    
+          }
+          if(score1==score2)
+          {
+           output.println("It's a Tie!");    
+          }
+          if(score1<score2)
+          {
+           output.println("Player Wins!");    
+          }
+          output.close();
+          }
+          catch(IOException e)
+          {
+           e.printStackTrace();    
+          }
+          }
+
+  }
+           
+     
+     

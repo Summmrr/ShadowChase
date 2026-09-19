@@ -1,0 +1,31 @@
+/*package environment;
+
+import java.io.*;
+import java.awt.*;
+import main.GameWindow;
+import main.KeyHandler;
+import javax.imageio.*;
+import java.awt.image.BufferedImage;
+
+public class Floor {
+     
+      public BufferedImage floor, wall;
+      GameWindow gW;
+          public Floor(GameWindow gW){
+         this.gW = gW;
+          }
+          
+     public void getFloorSprite(){
+          try{
+               floor = ImageIO.read(getClass().getResourceAsStream("/sprites/floor.png"));               
+          }
+          catch(IOException e){
+               e.printStackTrace();
+          }
+     }
+          public void drawFloor(Graphics2D g2) {
+       
+          }
+          g2.drawImage(floor,x,y,gW.tileSize,gW.tileSize,null);
+     }/*
+

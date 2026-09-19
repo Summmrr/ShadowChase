@@ -1,0 +1,156 @@
+package main;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import environment.Tiles;
+import main.GameWindow;
+
+public class KeyHandler implements KeyListener {        //class containg all input detections
+  
+  GameWindow gW;
+  
+  public boolean up, left, down, right;       
+  public boolean startGame;
+  public boolean pause = false;
+  public boolean titleScreen = false;
+  public boolean endScreen;
+  public boolean end = false;
+  public boolean mapSelection = true;
+  public int numberOfRounds;
+  
+  
+  public KeyHandler(GameWindow gW)
+  {
+    this.gW=gW;
+  }
+  public void keyTyped(KeyEvent e){                     //unused class but required for KeyListener to function
+  }
+  
+  public void keyPressed(KeyEvent e){                  //method detecting and storing all key presses
+    int keyCode = e.getKeyCode();
+    if (keyCode == KeyEvent.VK_W&&pause == false&&titleScreen == false)
+    {
+      up = true;
+      startGame = true;
+    }
+    if (keyCode == KeyEvent.VK_A&&pause == false&&titleScreen == false)
+    {
+      left = true;
+      startGame = true;
+    }
+    if (keyCode == KeyEvent.VK_S&&pause == false&&titleScreen == false)
+    {
+      down = true;
+      startGame = true;
+    }
+    if (keyCode == KeyEvent.VK_D&&pause == false&&titleScreen == false)
+    {
+      right = true;
+      startGame = true;
+    }
+    if (keyCode == KeyEvent.VK_P)
+    {
+      pause = true;
+    }
+    if (keyCode == KeyEvent.VK_SPACE)
+    {
+      pause = false;
+    }
+    if (keyCode == KeyEvent.VK_1&&titleScreen == true)
+    {
+      numberOfRounds = 1;
+      titleScreen = false;
+    }
+    if (keyCode == KeyEvent.VK_2&&titleScreen == true)
+    {
+      numberOfRounds = 2;
+      titleScreen = false;
+    }
+    if (keyCode == KeyEvent.VK_3&&titleScreen == true)
+    {
+      numberOfRounds = 3;
+      titleScreen = false;
+    }
+    if (keyCode == KeyEvent.VK_4&&titleScreen == true)
+    {
+      numberOfRounds = 4;
+      titleScreen = false;
+    }
+    if (keyCode == KeyEvent.VK_5&&titleScreen == true)
+    {
+      numberOfRounds = 5;
+      titleScreen = false;
+    }
+    if (keyCode == KeyEvent.VK_6&&titleScreen == true)
+    {
+      numberOfRounds = 6;
+      titleScreen = false;
+    }
+    if (keyCode == KeyEvent.VK_7&&titleScreen == true)
+    {
+      numberOfRounds = 7;
+      titleScreen = false;
+      mapSelection = true;
+    }
+    if (keyCode == KeyEvent.VK_8&&titleScreen == true)
+    {
+      numberOfRounds = 8;
+      titleScreen = false;
+    }
+    if (keyCode == KeyEvent.VK_9&&titleScreen == true)
+    {
+      numberOfRounds = 9;
+      titleScreen = false;
+    }
+    if (keyCode == KeyEvent.VK_K)
+    {
+      endScreen = true;
+      titleScreen = false;
+      pause = false;
+    }
+    if (keyCode == KeyEvent.VK_ENTER&&endScreen == true)
+    {
+      endScreen = false;
+      mapSelection = true;
+      pause = false;
+      gW.shadowScore = 0;
+      gW.playerScore = 0;
+    }
+    if (keyCode == KeyEvent.VK_ESCAPE)
+    {
+      end = true; 
+    }
+    if (keyCode == KeyEvent.VK_1&&titleScreen == false&&mapSelection == true)
+    {
+      Tiles.map01Bool = true ;
+      mapSelection = false;
+      titleScreen = true;
+    }
+    if (keyCode == KeyEvent.VK_2&&titleScreen == false&&mapSelection == true)
+    {
+      Tiles.map01Bool = false ;
+      mapSelection = false;
+      titleScreen = true;
+    }
+  }
+  
+  public void keyReleased (KeyEvent e){             //method detecting and storing all key releases
+    int keyCode = e.getKeyCode();
+    if (keyCode == KeyEvent.VK_W)
+    {
+      up = false;
+    }
+    if (keyCode == KeyEvent.VK_A)
+    {
+      left = false;
+    }
+    if (keyCode == KeyEvent.VK_S)
+    {
+      down = false;
+    }
+    if (keyCode == KeyEvent.VK_D)
+    {
+      right = false;
+    }
+  }
+}
+

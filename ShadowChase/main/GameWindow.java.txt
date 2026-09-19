@@ -1,0 +1,217 @@
+package main;
+
+import javax.swing.JPanel;
+import java.awt.*;
+import characters.Player;
+import environment.Tiles;
+import java.io.*;
+import main.ShadowChase;
+public class GameWindow extends JPanel implements Runnable                            //class contains everything to do with the display window
+{
+  KeyHandler inputs = new KeyHandler(this);                                              //initialize input detection
+  Thread gameThread;
+  Player player = new Player(this,inputs);
+  Tiles tiles = new Tiles(this,inputs);
+  ShadowChase main = new ShadowChase(this,inputs);
+  
+ 
+  
+  public boolean collision = false;
+  //window size
+  public final int defaultTileSize = 16;                                                     //16x16 pizel tile
+  public final int scale = 4;
+  
+  public final int tileSize = defaultTileSize * scale;                               // 64 x 64 pixel upscaled tile
+  public final int xAxis = 16;
+  public final int yAxis = 12;
+  public final int screenWidth = tileSize * xAxis;                                          //1024 x 768 pixel window
+  public final int screenHeight = tileSize * yAxis;
+  
+  //coordinates for player hitbox
+  public int collisionAreaX = player.x+16;                                  
+  public int collisionAreaY = player.y+31;
+  
+  //all environmental hitboxes
+  Rectangle collisionUpRect = new Rectangle(0,0,1024,64);  
+  Rectangle collisionLeftRect = new Rectangle(0,0,64,768);
+  Rectangle collisionDownRect = new Rectangle(0,724,1024,64);  
+  Rectangle collisionRightRect = new Rectangle(960,0,64,768);
+  Rectangle collisionTurn1Rect = new Rectangle(0,128,896,64);
+  Rectangle collisionTurn2Rect = new Rectangle(128,256,896,64);
+  Rectangle collisionTurn3Rect = new Rectangle(0,384,896,64);
+  Rectangle collisionTurn4Rect = new Rectangle(128,512,896,64);
+  Rectangle collisionTurn5Rect = new Rectangle(0,640,896,64);
+  
+  //hitbox for winning tile
+  Rectangle winBox = new Rectangle(896,704,64,64);
+  
+  //Frames Per Second
+  int fps = 60;
+  
+  //scores
+  public int shadowScore = 0;
+  public int playerScore = 0;
+  
+  //number of rounds
+  public int numberOfRounds = inputs.numberOfRounds;
+
+  public GameWindow()                                                                //create window with the following parameters
+  {
+    this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+    this.setBackground(Color.black);
+    this.setDoubleBuffered(true);
+    this.addKeyListener(inputs);
+    this.setFocusable(true);
+  }
+  
+  public void startGameThread() {                                                   //initlialize and start thread (main game loop)
+    gameThread = new Thread (this);
+    gameThread.start();
+    
+  }
+  
+  public void run(){                                                                //main game loop
+    
+    double timeBetweenFrames = 1000000000/fps;
+    double nextFrameTime = System.nanoTime() + timeBetweenFrames;
+    
+    while (gameThread!= null)
+    {
+      
+      update();
+      
+      repaint();
+      
+      
+      try
+      {
+        double timeRemaining = nextFrameTime - System.nanoTime();                    //clock that tells the thread to sleep until it is time for the next fram to appear
+        timeRemaining = timeRemaining/1000000;
+        
+        if(timeRemaining<0)
+        {
+          timeRemaining = 0;
+        }
+        Thread.sleep((long)timeRemaining);
+        
+        nextFrameTime+=timeBetweenFrames;
+      }
+      
+      catch(InterruptedException e)
+      {
+        e.printStackTrace();
+      }
+    }
+    
+  }
+  public void update()                                                             //method containing all logic updates
+  { 
+    if(shadowScore+playerScore == 0||(shadowScore/2)+(playerScore/2)<inputs.numberOfRounds){
+    if(inputs.pause == false&&inputs.titleScreen == false)                         //check if game is paused
+    {
+      
+      player.update();                                                             //call method containing all player and shadow logical updates
+      collision();
+      if((shadowScore/2)+(playerScore/2)==inputs.numberOfRounds){
+      ShadowChase.fileOutput(shadowScore, playerScore);
+      }
+    }
+  }
+  else
+  {
+    inputs.endScreen = true;
+  }
+  }
+  
+  public void paintComponent(Graphics g)                                          //method containing all graphical updates
+  {
+    super.paintComponent(g);
+    Graphics2D g2 = (Graphics2D)g;
+    
+    if (inputs.titleScreen == true){
+    tiles.drawTitleScreen(g2);
+    }
+    else if(inputs.endScreen == true){
+      tiles.outputResults(g2);
+    }
+    else{
+      //call method to draw tiles
+    tiles.draw(g2);
+    //call method to draw player and shadow
+    player.draw(g2);
+    
+    if(inputs.pause == true){
+      tiles.pauseScreen(g2);
+    }
+
+    }
+    g2.dispose();
+  }
+  public void collision(){                                                        //method containing all collision detection and effects
+    
+      //coordinates for shadow hitbox
+    int shadowCollisionAreaX = player.shadowX+16;
+    int shadowCollisionAreaY = player.shadowY + 32;
+    
+    //create 32x33 rectangle to be player hitbox
+    Rectangle collisionArea = new Rectangle(collisionAreaX,collisionAreaY,32,33);
+    //create 32x32 rectangle to be shadow hitbox
+    Rectangle shadowCollisionArea = new Rectangle(shadowCollisionAreaX,shadowCollisionAreaY,32,32);
+    
+    //if player hitbox intersects any other hitbox
+    if((collisionUpRect.intersects(collisionArea))||(collisionLeftRect.intersects(collisionArea))||(collisionDownRect.intersects(collisionArea))||
+       (collisionRightRect.intersects(collisionArea))||(collisionTurn1Rect.intersects(collisionArea))||(collisionTurn2Rect.intersects(collisionArea))||
+       (collisionTurn3Rect.intersects(collisionArea))||(collisionTurn4Rect.intersects(collisionArea))||(collisionTurn5Rect.intersects(collisionArea))||
+       (shadowCollisionArea.intersects(collisionArea))){
+      
+      //reset player to coordinates to spawn
+      player.x = 192;
+      player.y = 64;
+      //reset shadow to coordinates to spawn
+      player.shadowX = 64;
+      player.shadowY = 64;
+      //reset player hitbox to spawn
+      collisionAreaX = player.x+16;
+      collisionAreaY = player.y+31;
+      
+      //reset and stop shadow from moving
+      inputs.startGame = false;
+      player.turn1 = false;
+      player.turn2 = false;
+      player.turn3 = false;
+      
+      //pause game
+      inputs.pause = true;
+      
+      //increment score
+      shadowScore+=2;
+      
+      
+      
+    }
+    if(winBox.intersects(collisionArea))
+    {
+      //reset player to coordinates to spawn
+      player.x = 192;
+      player.y = 64;
+      //reset shadow to coordinates to spawn
+      player.shadowX = 64;
+      player.shadowY = 64;
+      //reset player hitbox to spawn
+      collisionAreaX = player.x+16;
+      collisionAreaY = player.y+31;
+      
+      //reset and stop shadow from moving
+      inputs.startGame = false;
+      player.turn1 = false;
+      player.turn2 = false;
+      player.turn3 = false;
+      
+      //pause game
+      inputs.pause = true;
+      playerScore+=2;
+      
+     
+  }
+ }
+}
