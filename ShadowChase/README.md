@@ -10,4 +10,4 @@ Every step was created myself, including but not limited to:
  - Graphics
  - All Interactions
 
-To run game, simply download ShadowChase, open in any java compiler, navigate to ShadowChase/main/ShadowChase.java and run the code.
+To play game, simply download ShadowChase, open in any IDE supporting java, navigate to ShadowChase/main/ShadowChase.java and run the code.
